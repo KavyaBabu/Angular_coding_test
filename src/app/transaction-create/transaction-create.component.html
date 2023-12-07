@@ -1,0 +1,58 @@
+<h2> Create & View Transactions </h2>
+
+<div class="form-container">
+<form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
+  <label for="transactionType">Transaction Type:</label>
+  <select formControlName="transaction_type" class="form-control">
+    <option value="" disabled selected>-- Select Transaction Type --</option>
+    <option *ngFor="let type of transactionTypes" [value]="type">{{ type }}</option>
+  </select>
+  <div *ngIf="hasError('transactionType', 'required')" class="error-message">Transaction Type is required.</div>
+
+  <ng-container *ngIf="isDeposit || isWithdraw || isTransfer">
+    <label *ngIf="isDeposit" for="target_bank_account_id">Target Bank Account:</label>
+    <label *ngIf="isWithdraw" for="source_bank_account_id">Source Bank Account:</label>
+    <label *ngIf="isTransfer" for="source_bank_account_id">Choose Bank Account:</label>
+
+    <select formControlName="source_bank_account_id" *ngIf="isWithdraw || isTransfer" class="form-control" (change)="onSourceChange()">
+      <option value="" disabled selected>-- Select Source Account --</option>
+      <option *ngFor="let bankAccount of sourceBankAccounts" [value]="bankAccount.id">
+        {{ bankAccount.bank_name }}
+      </option>
+    </select>
+
+    <select formControlName="target_bank_account_id" *ngIf="isDeposit || isTransfer" class="form-control" (change)="onSourceChange()">
+      <option value="" disabled selected>-- Select Target Account --</option>
+      <option *ngFor="let bankAccount of targetBankAccounts" [value]="bankAccount.id">
+        {{ bankAccount.bank_name }}
+      </option>
+    </select>
+
+    <div *ngIf="hasError('target_bank_account_id', 'required') || hasError('source_bank_account_id', 'required')" class="error-message">
+      {{ isDeposit ? 'Target' : 'Source' }} Bank Account is required.
+    </div>
+
+    <div *ngIf="hasError('target_bank_account_id', 'transferValidation')"  class="error-message">{{ transactionForm.get('target_bank_account_id')?.getError('message') }}</div>
+
+    <label for="amount">Amount:</label>
+    <input type="text" formControlName="amount" class="form-control" [attr.readonly]="isTextboxReadonly ? true : null"/>
+    <div *ngIf="hasError('amount', 'required') || hasError('amount', 'invalidNumber') || hasError('amount', 'invalidAmount')" class="error-message">
+      <ng-container *ngIf="hasError('amount', 'required')"><div>Amount is required.</div></ng-container>
+      <ng-container *ngIf="hasError('amount', 'invalidNumber')"><div>Please enter a valid amount.</div></ng-container>
+      <ng-container *ngIf="hasError('amount', 'invalidAmount')"><div>{{ transactionForm.get('amount')?.getError('message') }}</div></ng-container>
+    </div>
+    
+    <div *ngIf="isWithdraw">
+      <label for="withdrawFullValue">Withdraw Full Value:</label>
+      <input type="checkbox" formControlName="withdrawFullValue" (change)="onWithdrawFullValueChange()"/>
+      <br>
+    </div>
+
+  </ng-container>
+  <label for="Description">Description:</label>
+    <textarea formControlName="description" class="form-control"></textarea>
+
+  <button type="submit" [disabled]="transactionForm.invalid" class="submit-btn">Submit</button>
+  <button type="button" (click)="resetForm()" class="reset-btn">Reset</button>
+</form>
+</div>

@@ -1,0 +1,43 @@
+<mat-table [dataSource]="dataSource" class="custom-table">
+  <ng-container matColumnDef="id">
+    <mat-header-cell *matHeaderCellDef> Transaction ID </mat-header-cell>
+    <mat-cell *matCellDef="let transaction"> {{ transaction.id }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="transaction_type">
+    <mat-header-cell *matHeaderCellDef> Transaction Type </mat-header-cell>
+    <mat-cell *matCellDef="let transaction"> {{ transaction.transaction_type }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="amount">
+    <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+    <mat-cell *matCellDef="let transaction"> {{ transaction.amount | currency:'GBP':'symbol':'1.2-2' }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="source_account_holder_name">
+    <mat-header-cell *matHeaderCellDef> Source Account Holder </mat-header-cell>
+    <mat-cell *matCellDef="let transaction"> {{ transaction.source?.account_holder_name || 'N/A' }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="target_account_holder_name">
+    <mat-header-cell *matHeaderCellDef> Target Account Holder </mat-header-cell>
+    <mat-cell *matCellDef="let transaction"> {{ transaction.target?.account_holder_name || 'N/A' }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+    <mat-cell *matCellDef="let transaction">
+      <button (click)="deleteTransaction(transaction.id)" class="delete-button">
+        <i class="fas fa-trash"></i>
+      </button>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+</mat-table>
+<mat-paginator 
+#paginator
+[pageSizeOptions]="[5, 10, 15]"
+showFirstLastButtons>
+</mat-paginator> 
